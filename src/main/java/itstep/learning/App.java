@@ -1,7 +1,10 @@
 package itstep.learning;
 
 import com.google.inject.Guice;
+import itstep.learning.acc.AppConsoleComand;
+import itstep.learning.async.AsyncDemo;
 import itstep.learning.db.DbDemo;
+import itstep.learning.fs.FileDemo;
 import itstep.learning.ioc.DbModule;
 import itstep.learning.ioc.IocDemo;
 import itstep.learning.ioc.ServicesModule;
@@ -24,7 +27,7 @@ public class App
                         new ServicesModule(),
                         new DbModule()
                 ) // Configuration
-                .getInstance(IocDemo.class) // Resolve
+                .getInstance(AppConsoleComand.class)
                 .run();
 
     }
