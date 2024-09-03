@@ -3,16 +3,56 @@ package itstep.learning.fs;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.IOException;
 
 public class FileDemo {
 
     public void run(){
        // Ресурси - файли, що автоматично переносяться у target/classes
         // і доступні при запуску через ClassLoader
+
+    }
+
+    public void addDbIni(String key, String value){
+        try {
+            String fileName = "/db.ini";
+            Path path = new File(this.getClass().getResource(fileName).getFile()).toPath();
+            String data = "\n" + key + "=" + value;
+
+            try {
+                Files.write(path, data.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+
+            } catch (IOException e) {
+                e.getMessage();
+            }
+        }catch (Exception e){
+            e.getMessage();
+        }
+    }
+
+    public void showDbIni(){
+        Map<String, String> ini = getDbIniData();
+        System.out.println(
+                String.format("jdbc:%s://%s:%s/%s",
+                        ini.get("dbms"),
+                        ini.get("host"),
+                        ini.get("port"),
+                        ini.get("schema"),
+                        ini.get("utf")
+                )
+        );
+
+    }
+
+    public Map<String, String> getDbIniData(){
+        String fileName = "db.ini";
         try(InputStream rs =
-            this.getClass().getClassLoader().getResourceAsStream("db.ini"))
+                    this.getClass().getClassLoader().getResourceAsStream(fileName))
         {
             String content = readStream(rs);
             Map<String, String> ini = new HashMap<>();
@@ -22,16 +62,10 @@ public class FileDemo {
                 String[] parts = line.split("=");
                 ini.put(parts[0].trim(), parts[1].trim());
             }
-            System.out.println(
-                    String.format("jdbc:%s://%s:%s/%s",
-                    ini.get("dbms"),
-                    ini.get("host"),
-                    ini.get("port"),
-                    ini.get("schema")
-                    )
-            );
-        }catch (IOException e){
 
+            return ini;
+        }catch (IOException e){
+            return null;
         }
     }
 
