@@ -29,7 +29,7 @@ public class DbModule extends AbstractModule {
 
                 connection = DriverManager.getConnection(
                         "jdbc:" + dataDbIni.get("dbms") + "://" + dataDbIni.get("host") + ":" + dataDbIni.get("port") + "/" + dataDbIni.get("schema") +
-                                "?useUnicode=true&characterEncoding=" + dataDbIni.get("utf"),
+                                "?useUnicode=true&characterEncoding=" + dataDbIni.get("encoding"),
                         "user222",
                         "pass222");
                 // different between ADO and JDBC connected when create
