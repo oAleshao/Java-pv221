@@ -2,6 +2,7 @@ package itstep.learning.async;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class PandigitalNumber {
     private final ExecutorService pool = Executors.newFixedThreadPool(3);
@@ -26,13 +27,6 @@ public class PandigitalNumber {
 
     }
 
-
-    private void SetNumber(int digit){
-
-    }
-
-
-
     private class PandigitalNumberRunnable implements Runnable{
         int digit;
 
@@ -43,6 +37,9 @@ public class PandigitalNumber {
         @Override
         public void run() {
             synchronized (digitLocker){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                }catch (Exception ignore){}
                 if(pandigitalNumber == null){
                     pandigitalNumber = digit + "";
                 }
