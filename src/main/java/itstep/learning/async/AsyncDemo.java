@@ -1,13 +1,18 @@
 package itstep.learning.async;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class AsyncDemo {
+   private final ExecutorService pool = Executors.newFixedThreadPool(3);
+
     public void run(){
         //threadDemo();
-        //taskDemo();
-        percentDemo();
+        System.out.println("Starting async thread");
+        taskDemo();
+        //percentDemo();
     }
     private void threadDemo(){
         // Thread - основний класс для роботи з потоками
@@ -79,19 +84,83 @@ public class AsyncDemo {
 
     }
 
-
-
     private double getPercent(int month){
         try {
-            TimeUnit.MICROSECONDS.sleep(300);
-
+            TimeUnit.MICROSECONDS.sleep(5000);
         }
         catch (InterruptedException e) {}
         return  10.0;
     }
 
     private void taskDemo(){
+        System.out.printf("Work task demo\n");
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                try {
+                     TimeUnit.MILLISECONDS.sleep(1000);
+                }catch (InterruptedException ignore){}
+                return "Callable data";
+            }
+        };
+
+        Callable<String> callable2 = () ->{
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            }catch (InterruptedException ignore){}
+            return "Callable data";
+        };
+
+        Future<String> task1 = pool.submit(callable);
+        Future<String> task2 = pool.submit(callable2);
+        Future<Double> task3 = pool.submit(()->getPercent(1));
+
+        try {
+            String res1 = task1.get();
+            System.out.println(res1);
+            String res2 = task2.get();
+            System.out.println(res2);
+            double res3 = task3.get();
+            System.out.println(res3);
+
+            sum = 100.0;
+            Future<Double>[] tasks = new Future[12];
+
+            for(int i = 1; i <= 12;i++) {
+                tasks[i-1] = pool.submit(new PercentCallable(i));
+            }
+
+            for(int i = 1; i <= 12;i++) {
+                double percent = tasks[i-1].get();
+                double factor = (1.0 + percent / 100);
+                sum = sum * factor;
+                System.out.printf("month: %d, sum: %.2f\n", i, sum);
+            }
+        }catch (InterruptedException | ExecutionException e){
+            System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+
+
+
+        pool.shutdown();
+        try {pool.awaitTermination(15000, TimeUnit.MILLISECONDS);}
+        catch (InterruptedException ignore){}
+        pool.shutdownNow();
+
     }
+
+    class PercentCallable implements Callable<Double>{
+        private final int month;
+        public PercentCallable(int month){
+            this.month = month;
+        }
+        @Override
+        public Double call() throws Exception {
+            double percent = getPercent(month);
+            return percent;
+        }
+    }
+
 }
 
 /*

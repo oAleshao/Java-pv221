@@ -3,6 +3,7 @@ package itstep.learning;
 import com.google.inject.Guice;
 import itstep.learning.acc.AppConsoleComand;
 import itstep.learning.async.AsyncDemo;
+import itstep.learning.async.PandigitalNumber;
 import itstep.learning.db.DbDemo;
 import itstep.learning.fs.FileDemo;
 import itstep.learning.ioc.DbModule;
@@ -27,7 +28,7 @@ public class App
                         new ServicesModule(),
                         new DbModule()
                 ) // Configuration
-                .getInstance(AppConsoleComand.class)
+                .getInstance(PandigitalNumber.class)
                 .run();
 
     }
